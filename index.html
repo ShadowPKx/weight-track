@@ -1,0 +1,225 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Weight-Track</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js" integrity="sha256-MZo5XY1Ah7Z2Aui4/alkfeiq3CopMdV/bbkc/Sh41+s=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="content">
+            <h1>Weight-Track</h1>
+            <p id="status">Please wait while Weight-Track is loading... (JavaScript needed)</p>
+        </div>
+        <div id="footer">
+            <p>Made with <a href="https://www.chartjs.org/docs/latest/">Chart.js</a></p>
+        </div>
+        <script type="text/javascript">
+            var colorFromIndex = function(index) {
+                var colors = [
+                    '255, 99, 132',
+                    '54, 162, 235',
+                    '255, 206, 86',
+                    '75, 192, 192',
+                    '153, 102, 255',
+                    '255, 159, 64'
+                ];
+                if (index < colors.length) {
+                    return colors[index];
+                } else {
+                    return '120, 120, 120';
+                }
+            };
+
+            var createDataset = function(name, data, color) {
+                return {
+                    label: name,
+                    data: data,
+                    backgroundColor: [
+                        'rgba(' + color + ', 0)'
+                    ],
+                    borderColor: [
+                        'rgba(' + color + ', 1)'
+                    ],
+                    borderWidth: 4
+                };
+            };
+
+            var addToForm = function(form, element, name) {
+                var fe = document.createElement('p');
+                fe.innerHTML = name + ' ';
+                fe.appendChild(element);
+                form.appendChild(fe);
+            };
+
+            var renderUser = function(data) {
+                var div = document.createElement('div');
+                var ctx = document.createElement('canvas');
+
+                var datasets = [];
+                for (var i = 0; i < data.users.length; i++) {
+                    var set = createDataset(data.users[i].name,
+                            data.users[i].data, colorFromIndex(i));
+                    datasets.push(set);
+                }
+
+                var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    unit: 'day'
+                                }
+                            }]
+                        },
+                        events: [
+                            'mousemove', 'mouseout', 'click',
+                            'touchstart', 'touchmove', 'touchend'
+                        ],
+                        tooltips: {
+                            mode: 'nearest',
+                            intersect: false,
+                            axis: 'x'
+                        }
+                    }
+                });
+
+                if (data.users.length > 0) {
+                    div.appendChild(ctx);
+                    div.appendChild(document.createElement('hr'));
+
+                    var date = new Date();
+                    var hours = date.getHours();
+                    hours = (hours < 10) ? '0' + hours : hours;
+                    var minutes = date.getMinutes();
+                    minutes = (minutes < 10) ? '0' + minutes : minutes;
+
+                    var form_append = document.createElement('form');
+                    form_append.setAttribute('method', 'post');
+                    form_append.setAttribute('action', 'weight.php');
+
+                    var p_append = document.createElement('p');
+                    p_append.innerHTML = 'Add new Data-Point:';
+                    form_append.appendChild(p_append);
+
+                    var name_append = document.createElement('select');
+                    for (var i = 0; i < data.users.length; i++) {
+                        var option = document.createElement('option');
+                        option.text = data.users[i].name;
+                        option.value = 'user_' + data.users[i].id;
+                        name_append.add(option);
+                    }
+                    name_append.setAttribute('name', 'username');
+                    name_append.required = true;
+                    addToForm(form_append, name_append, 'Username:');
+
+                    var date_append = document.createElement('input');
+                    date_append.setAttribute('type', 'date');
+                    date_append.setAttribute('name', 'date');
+                    date_append.setAttribute('placeholder', 'Date');
+                    date_append.required = true;
+                    date_append.value = date.toISOString().slice(0, 10);
+                    addToForm(form_append, date_append, 'Date:');
+
+                    var time_append = document.createElement('input');
+                    time_append.setAttribute('type', 'time');
+                    time_append.setAttribute('name', 'time');
+                    time_append.setAttribute('placeholder', 'Time');
+                    time_append.required = true;
+                    time_append.value = hours + ':' + minutes;
+                    addToForm(form_append, time_append, 'Time:');
+
+                    var weight_append = document.createElement('input');
+                    weight_append.setAttribute('type', 'number');
+                    weight_append.setAttribute('name', 'weight');
+                    weight_append.setAttribute('step', '0.1');
+                    weight_append.setAttribute('placeholder', 'Weight');
+                    weight_append.required = true;
+                    addToForm(form_append, weight_append, 'Weight:');
+
+                    var submit_append = document.createElement('input');
+                    submit_append.setAttribute('type', 'submit');
+                    submit_append.setAttribute('value', 'Add Data');
+                    form_append.appendChild(submit_append);
+
+                    div.appendChild(form_append);
+                    div.appendChild(document.createElement('hr'));
+                }
+
+                var form_new = document.createElement('form');
+                form_new.setAttribute('method', 'post');
+                form_new.setAttribute('action', 'weight.php');
+
+                var p_new = document.createElement('p');
+                p_new.innerHTML = 'Add new User:';
+                form_new.appendChild(p_new);
+
+                var name_new = document.createElement('input');
+                name_new.setAttribute('type', 'text');
+                name_new.setAttribute('name', 'username');
+                name_new.setAttribute('placeholder', 'Name');
+                name_new.required = true;
+                addToForm(form_new, name_new, 'Username:');
+
+                var submit_new = document.createElement('input');
+                submit_new.setAttribute('type', 'submit');
+                submit_new.setAttribute('value', 'Add User');
+                form_new.appendChild(submit_new);
+
+                div.appendChild(form_new);
+                div.appendChild(document.createElement('hr'));
+                document.getElementById("content").appendChild(div);
+            };
+
+            var getJSON = function(url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'json';
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        callback(null, xhr.response);
+                    } else {
+                        callback(xhr.status, xhr.response);
+                    }
+                };
+                xhr.send();
+            };
+
+            document.getElementById("status").textContent = "Loading from Database...";
+
+            getJSON('weight.php', function(err, data) {
+                if (err !== null) {
+                    document.getElementById("status").textContent = 'Error: ' + err;
+                    return;
+                }
+                if (typeof data.error !== 'undefined') {
+                    document.getElementById("status").textContent = 'Error: ' + data.error;
+                    return;
+                }
+                if (typeof data.users !== 'undefined') {
+                    var s = 'Received data for ' + data.users.length + ' users';
+                    if (data.users.length > 0) {
+                        s += ': ';
+                        for (var i = 0; i < data.users.length; i++) {
+                            s += '"' + data.users[i].name + '"';
+                            if (i < (data.users.length - 1)) {
+                                s += ', ';
+                            }
+                        }
+                        s += '. Rendering...';
+                    } else {
+                        s += '. Nothing to show!';
+                    }
+                    document.getElementById("status").textContent = s;
+                    renderUser(data);
+                } else {
+                    document.getElementById("status").textContent = 'Error: no data';
+                    return;
+                }
+            });
+        </script>
+    </body>
+</html>
