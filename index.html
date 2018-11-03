@@ -15,6 +15,8 @@
         <script type="text/javascript">
             var colorFromIndex = function(index) {
                 var colors = [
+                    '129, 38, 204',
+                    '48, 181, 36',
                     '255, 99, 132',
                     '54, 162, 235',
                     '255, 206, 86',
@@ -136,6 +138,8 @@
                     weight_append.setAttribute('type', 'number');
                     weight_append.setAttribute('name', 'weight');
                     weight_append.setAttribute('step', '0.1');
+                    weight_append.min = 42.0;
+                    weight_append.max = 999.9;
                     weight_append.setAttribute('placeholder', 'Weight');
                     weight_append.required = true;
                     addToForm(form_append, weight_append, 'Weight:');
