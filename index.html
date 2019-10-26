@@ -58,6 +58,37 @@
                 var div = document.createElement('div');
                 var ctx = document.createElement('canvas');
 
+                var min_date = new Date('3000-01-01T00:00:00');
+                var max_date = new Date('1000-01-01T00:00:00');
+                var min_kilo = 1000;
+                var max_kilo = 0;
+                for (var i = 0; i < data.users.length; i++) {
+                    for (var j = 0; j < data.users[i].data.length; j++) {
+                        temp_date = new Date(data.users[i].data[j].x);
+                        temp_kilo = parseInt(data.users[i].data[j].y);
+                        if (temp_date < min_date) {
+                            min_date = temp_date;
+                        }
+                        if (temp_date > max_date) {
+                            max_date = temp_date;
+                        }
+                        if (temp_kilo < min_kilo) {
+                            min_kilo = temp_kilo;
+                        }
+                        if (temp_kilo > max_kilo) {
+                            max_kilo = temp_kilo;
+                        }
+                    }
+                }
+
+                var days = (max_date - min_date) / 1000 / 60 / 60 / 24;
+                var pixels_per_day = 3000 / 365;
+                var width_px = days * pixels_per_day;
+
+                var kilos = (max_kilo - min_kilo);
+                var pixels_per_kilo = 1400 / 100;
+                var height_px = kilos * pixels_per_kilo;
+
                 var datasets = [];
                 for (var i = 0; i < data.users.length; i++) {
                     var set = createDataset(data.users[i].name,
@@ -71,6 +102,7 @@
                         datasets: datasets
                     },
                     options: {
+                        maintainAspectRatio: false,
                         scales: {
                             xAxes: [{
                                 type: 'time',
@@ -92,7 +124,20 @@
                 });
 
                 if (data.users.length > 0) {
-                    div.appendChild(ctx);
+                    div_wrapper = document.createElement('div');
+                    div_wrapper.setAttribute('style', 'width: ' + Math.ceil(width_px) + 'px;');
+
+                    div_wrapper.style.width = Math.ceil(width_px) + 'px';
+                    div_wrapper.style.height = height_px + 'px';
+                    div_wrapper.width = Math.ceil(width_px);
+                    div_wrapper.height = height_px;
+
+                    div_wrapper.appendChild(ctx);
+                    div_wrapper2 = document.createElement('div');
+                    div_wrapper2.setAttribute('style', 'overflow-x: auto; overflow-y: auto;');
+                    div_wrapper2.appendChild(div_wrapper);
+
+                    div.appendChild(div_wrapper2);
                     div.appendChild(document.createElement('hr'));
 
                     var date = new Date();
