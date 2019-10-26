@@ -31,10 +31,11 @@
                 }
             };
 
-            var createDataset = function(name, data, color) {
+            var createDataset = function(name, data, color, id) {
                 return {
                     label: name,
                     data: data,
+                    yAxisID: id,
                     backgroundColor: [
                         'rgba(' + color + ', 0)'
                     ],
@@ -91,9 +92,11 @@
 
                 var datasets = [];
                 for (var i = 0; i < data.users.length; i++) {
-                    var set = createDataset(data.users[i].name,
-                            data.users[i].data, colorFromIndex(i));
-                    datasets.push(set);
+                    for (var j = 0; j <= 1; j++) {
+                        var set = createDataset(data.users[i].name,
+                                data.users[i].data, colorFromIndex(i), j ? 'A' : 'B');
+                        datasets.push(set);
+                    }
                 }
 
                 var chart = new Chart(ctx, {
@@ -109,6 +112,15 @@
                                 time: {
                                     unit: 'day'
                                 }
+                            }],
+                            yAxes: [{
+                                id: 'A',
+                                type: 'linear',
+                                position: 'left'
+                            }, {
+                                id: 'B',
+                                type: 'linear',
+                                position: 'right'
                             }]
                         },
                         events: [
