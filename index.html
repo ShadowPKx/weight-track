@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Weight-Track</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js" integrity="sha256-MZo5XY1Ah7Z2Aui4/alkfeiq3CopMdV/bbkc/Sh41+s=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.0/dist/Chart.bundle.min.js" integrity="sha256-tSYaQkuUF17Z5HozxXRWckY1j6uVLYFEHGEooJ6YsP0=" crossorigin="anonymous"></script>
     </head>
     <body>
         <div id="content">
@@ -41,6 +41,8 @@
                     borderColor: [
                         'rgba(' + color + ', 1)'
                     ],
+                    pointBorderColor: 'rgba(' + color + ', 1)',
+                    pointRadius: 2,
                     borderWidth: 4
                 };
             };
