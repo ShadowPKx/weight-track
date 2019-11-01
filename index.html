@@ -146,6 +146,7 @@
 
                     div_wrapper.appendChild(ctx);
                     div_wrapper2 = document.createElement('div');
+                    div_wrapper2.id = 'scroller';
                     div_wrapper2.setAttribute('style', 'overflow-x: auto; overflow-y: auto;');
                     div_wrapper2.appendChild(div_wrapper);
 
@@ -235,6 +236,8 @@
                 div.appendChild(form_new);
                 div.appendChild(document.createElement('hr'));
                 document.getElementById("content").appendChild(div);
+
+                document.getElementById("scroller").scrollLeft += width_px * 4;
             };
 
             var getJSON = function(url, callback) {
